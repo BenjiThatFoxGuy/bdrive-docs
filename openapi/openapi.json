@@ -1585,6 +1585,67 @@
         }
       }
     },
+    "/shares/{id}/zip": {
+      "post": {
+        "operationId": "Shares_downloadZip",
+        "summary": "Download multiple shared files bundled as a zip archive",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Zip archive streaming response",
+            "headers": {
+              "Content-Disposition": {
+                "required": true,
+                "description": "Archive attachment information",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shares"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FileZipDownload"
+              }
+            }
+          }
+        }
+      }
+    },
     "/uploads/stats": {
       "get": {
         "operationId": "Uploads_stats",
