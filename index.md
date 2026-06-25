@@ -2,23 +2,23 @@
 layout: home
 
 hero:
-  name: "Teldrive"
-  tagline: Teldrive is a powerful utility that enables you to organise your telegram files and much more.
+  name: "BDrive"
+  tagline: BDrive is a powerful utility that enables you to organise your telegram files and much more.
   actions:
     - theme: brand
       text: Get Started
       link: /docs/
     - theme: alt
       text: View on GitHub
-      link: https://github.com/tgdrive/teldrive
+      link: https://github.com/BenjiThatFoxGuy/bdrive
   image:
     src: /images/logo.png
-    alt: Teldrive
+    alt: BDrive
 
 features:
   - icon: 🚀
     title: Ultrafast & Lightweight
-    details: Built with Go, TelDrive delivers exceptional performance with minimal resource usage.
+    details: Built with Go, BDrive delivers exceptional performance with minimal resource usage.
   - icon: 🎨
     title: Sleek Material You Design
     details: Modern and intuitive user interface.

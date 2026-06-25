@@ -1,6 +1,6 @@
 # Prerequisites
 
-Before setting up Teldrive, ensure you have the following requirements in place:
+Before setting up BDrive, ensure you have the following requirements in place:
 
 ## Required Components
 

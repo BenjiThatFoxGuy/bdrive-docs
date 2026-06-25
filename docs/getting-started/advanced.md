@@ -1,6 +1,6 @@
 # Advanced Usage
 
-This guide covers advanced Teldrive configuration options to enhance performance and security.
+This guide covers advanced BDrive configuration options to enhance performance and security.
 
 ## Multi-Threaded Streams
 
@@ -37,8 +37,8 @@ You can generate a secure random encryption key using the [key generator tool](/
 > [!NOTE]
 > - Add `encrypt_files = true` in your rclone config when enabling encryption
 > - Store your encryption key securely - you can't recover files without it
-> - Teldrive's encryption is more secure than rclone's crypt implementation as it generates a random salt for each file part rather than using the same salt for all files
-> - Enabling encryption in Teldrive makes the UI fully compatible with encrypted files
+> - BDrive's encryption is more secure than rclone's crypt implementation as it generates a random salt for each file part rather than using the same salt for all files
+> - Enabling encryption in BDrive makes the UI fully compatible with encrypted files
 
 ## Adding Bot Tokens
 
@@ -48,7 +48,7 @@ Bot tokens are essential for optimal Telegram API interaction. To create and add
 2. Start a chat and type `/newbot`
 3. Follow the prompts to set a name and username (must end with `bot`)
 4. BotFather will provide your bot token
-5. Add 7-8 bot tokens in the Teldrive UI Settings for better upload/download speeds
+5. Add 7-8 bot tokens in the BDrive UI Settings for better upload/download speeds
 
 > [!WARNING]
 > Bots will be automatically added as admins in your channel when set through the UI. If this fails, add them manually.
@@ -56,7 +56,7 @@ Bot tokens are essential for optimal Telegram API interaction. To create and add
 
 ## Using a Thumbnail Resizer
 
-Teldrive supports on-the-fly image resizing using `imgproxy` for thumbnail viewing:
+BDrive supports on-the-fly image resizing using `imgproxy` for thumbnail viewing:
 
 ::: code-group
 
@@ -82,4 +82,4 @@ docker compose up -d
 
 For better performance:
 - Deploy imgproxy behind Cloudflare or another web server with caching
-- Enter the URL of your deployed resizer service in the Teldrive UI settings
+- Enter the URL of your deployed resizer service in the BDrive UI settings

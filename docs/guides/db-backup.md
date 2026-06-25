@@ -1,6 +1,6 @@
 # Automated Database Backups with Rclone
 
-This guide explains how to set up automated backups of your Teldrive database to any storage provider supported by Rclone.
+This guide explains how to set up automated backups of your BDrive database to any storage provider supported by Rclone.
 
 ## Prerequisites
 

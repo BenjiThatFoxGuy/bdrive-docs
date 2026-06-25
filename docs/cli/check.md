@@ -1,6 +1,6 @@
 # Storage Integrity Check
 
-The `check` command helps you maintain the integrity of your Teldrive storage by identifying and resolving file part issues.
+The `check` command helps you maintain the integrity of your BDrive storage by identifying and resolving file part issues.
 
 ## What Does the Command Do?
 

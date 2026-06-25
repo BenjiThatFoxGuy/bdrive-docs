@@ -2,23 +2,22 @@ import { defineConfig } from 'vitepress'
 
 export default defineConfig({
   lang: "en-US",
-  title: "Teldrive",
-  description: "Teldrive is a powerful utility that enables you to organize your Telegram files and much more",
+  title: "BDrive",
+  description: "BDrive is a powerful utility that enables you to organize your Telegram files and much more",
   lastUpdated: true,
   ignoreDeadLinks: true,
   cleanUrls: true,
   sitemap: {
-    hostname: 'https://teldrive-docs.pages.dev'
+    hostname: 'https://bdrive-docs.pages.dev'
   },
   themeConfig: {
     logo: '/images/logo.png',
-    siteTitle: 'Teldrive',
+    siteTitle: 'BDrive',
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/tgdrive/teldrive' },
-      { icon: 'discord', link: 'https://discord.gg/8QAeCvTK7G' },
+      { icon: 'github', link: 'https://github.com/BenjiThatFoxGuy/bdrive' },
     ],
     editLink: {
-      pattern: 'https://github.com/tgdrive/teldrive-docs/edit/main/:path',
+      pattern: 'https://github.com/BenjiThatFoxGuy/bdrive-docs/edit/main/:path',
       text: 'Edit this page on GitHub',
     },
     footer: {
@@ -77,7 +76,7 @@ export default defineConfig({
       },
     ],
     ['meta', { property: 'og:type', content: 'website' }],
-    ['meta', { property: 'twitter:domain', content: 'teldrive-docs.pages.dev' }],
+    ['meta', { property: 'twitter:domain', content: 'bdrive-docs.pages.dev' }],
     [
       'meta',
       {

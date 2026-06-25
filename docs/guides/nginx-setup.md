@@ -1,6 +1,6 @@
-# Deploying Teldrive with Nginx Proxy
+# Deploying BDrive with Nginx Proxy
 
-This guide shows how to deploy Teldrive with automatic SSL certificate generation using nginx-proxy and Let's Encrypt companion containers.
+This guide shows how to deploy BDrive with automatic SSL certificate generation using nginx-proxy and Let's Encrypt companion containers.
 
 ## Prerequisites
 
@@ -76,16 +76,16 @@ Start the nginx-proxy containers:
 docker compose -f proxy.yml up -d
 ```
 
-## Docker Compose for Teldrive
+## Docker Compose for BDrive
 
-Create a `docker-compose.yml` file for Teldrive setup:
+Create a `docker-compose.yml` file for BDrive setup:
 
 ```yml
 version: '3'
 
 services:
   teldrive:
-    image: ghcr.io/tgdrive/teldrive
+    image: ghcr.io/benjithatfoxguy/bdrive
     container_name: teldrive
     restart: always
     volumes:
@@ -135,7 +135,7 @@ location / {
 EOL
 ```
 
-## Start Teldrive Services
+## Start BDrive Services
 
 Initialize and start the services:
 
@@ -150,9 +150,9 @@ docker compose up -d
 
 2. **Email for Certificates**: Update `DEFAULT_EMAIL=your-email@example.com` with your actual email address in the `proxy.yml` file.
 
-3. **Teldrive Configuration**: Make sure you've created your `config.toml` file as described in the [usage guide](/docs/getting-started/usage.md).
+3. **BDrive Configuration**: Make sure you've created your `config.toml` file as described in the [usage guide](/docs/getting-started/usage.md).
 
-4. **UI Settings**: After setting up the services, access the Teldrive UI at `https://teldrive.yourdomain.com` and set the image resizer URL to `https://img.yourdomain.com` in the settings page.
+4. **UI Settings**: After setting up the services, access the BDrive UI at `https://teldrive.yourdomain.com` and set the image resizer URL to `https://img.yourdomain.com` in the settings page.
 
 ## Troubleshooting
 
@@ -167,8 +167,8 @@ docker compose up -d
 - Inspect logs with `docker logs nginx-proxy` and `docker logs teldrive`
 
 **502 Bad Gateway Errors:**
-- Confirm Teldrive is running: `docker ps`
-- Check Teldrive logs: `docker logs teldrive`
+- Confirm BDrive is running: `docker ps`
+- Check BDrive logs: `docker logs teldrive`
 
 ## Updating Services
 
@@ -179,7 +179,7 @@ To update your services to the latest versions:
 docker compose -f proxy.yml pull
 docker compose -f proxy.yml up -d
 
-# Update Teldrive containers
+# Update BDrive containers
 docker compose pull
 docker compose up -d
 ```

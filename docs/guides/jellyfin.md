@@ -1,12 +1,12 @@
-# Using Teldrive with Media Servers (Plex/Jellyfin/Emby)
+# Using BDrive with Media Servers (Plex/Jellyfin/Emby)
 
-This guide explains how to integrate Teldrive with popular media server applications like Plex, Jellyfin, and Emby to create your own streaming media solution.
+This guide explains how to integrate BDrive with popular media server applications like Plex, Jellyfin, and Emby to create your own streaming media solution.
 
-**Important:** Complete the Teldrive setup before following this guide.
+**Important:** Complete the BDrive setup before following this guide.
 
 ## Install Docker Volume Plugin
 
-First, install the rclone Docker volume plugin to mount your Teldrive storage:
+First, install the rclone Docker volume plugin to mount your BDrive storage:
 
 ```bash
 docker plugin install ghcr.io/tgdrive/docker-volume-rclone --alias rclone --grant-all-permissions args="--allow-other" config=/etc/rclone cache=/var/cache
@@ -17,7 +17,7 @@ docker plugin install ghcr.io/tgdrive/docker-volume-rclone --alias rclone --gran
 
 ## Setting Up Jellyfin
 
-Create a Docker Compose file to run Jellyfin with access to your Teldrive storage:
+Create a Docker Compose file to run Jellyfin with access to your BDrive storage:
 
 ::: code-group
 
@@ -37,7 +37,7 @@ volumes:
 ```
 :::
 
-Plex and Emby can be configured similarly. You can share the Teldrive volume with any container using the rclone volume driver.
+Plex and Emby can be configured similarly. You can share the BDrive volume with any container using the rclone volume driver.
 
 ## Important Container Management
 

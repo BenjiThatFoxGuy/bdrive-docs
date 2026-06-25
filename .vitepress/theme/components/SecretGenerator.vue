@@ -95,11 +95,11 @@
     
     <div class="secret-info">
       <p v-if="secretType === 'jwt'">
-        This JWT secret will be used for secure authentication in Teldrive.
+        This JWT secret will be used for secure authentication in BDrive.
         Place it in the <code>config.toml</code> file under the <code>[jwt]</code> section.
       </p>
       <p v-else-if="secretType === 'encryption'">
-        This encryption key will be used to encrypt your files in Teldrive.
+        This encryption key will be used to encrypt your files in BDrive.
         Place it in the <code>config.toml</code> file under the <code>[tg.uploads]</code> section.
       </p>
       <p v-else>

@@ -4,13 +4,13 @@ import "@typespec/openapi";
 using TypeSpec.Http;
 @server(
   "{url}/api",
-  "Teldrive Server URL",
+  "BDrive Server URL",
   {
     url: string,
   }
 )
 @service(#{
-  title: "Teldrive",
+  title: "BDrive",
 })
 namespace Teldrive;
 
