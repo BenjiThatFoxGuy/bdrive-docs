@@ -1,8 +1,8 @@
-# Teldrive on Android (Termux)
+# BDrive on Android (Termux)
 
 ## Prerequisites
 
-Setting up Teldrive on Android, ensure you have the following in place.
+Setting up BDrive on Android, ensure you have the following in place.
 
 ### Before you begin
 
@@ -108,7 +108,7 @@ nano config.toml
 
 > [!NOTE]
 > - If the file does not exist, `nano` will create it automatically.
-> - View a complete sample configuration at the [GitHub repository](https://github.com/tgdrive/teldrive/blob/main/config.sample.toml)
+> - View a complete sample configuration at the [GitHub repository](https://github.com/BenjiThatFoxGuy/bdrive/blob/main/config.sample.toml)
 
 ### Saving and Exiting Nano
 
@@ -116,9 +116,9 @@ nano config.toml
 - Press **Enter** to confirm
 - Press **Ctrl + X** to exit
 
-> To run Teldrive, follow the instructions here. [Running without Docker](docs/getting-started/usage#running-without-docker) 
+> To run BDrive, follow the instructions here. [Running without Docker](docs/getting-started/usage#running-without-docker) 
 
-## Accessing Teldrive
+## Accessing BDrive
 
 - Open http://localhost:8080 in your browser.
 > See the main guide:  [Here](docs/getting-started/usage#accessing-teldrive)

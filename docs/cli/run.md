@@ -1,6 +1,6 @@
 # Command Line Options
 
-Teldrive offers various command line options to customize its behavior and performance. Below are the available options categorized by function.
+BDrive offers various command line options to customize its behavior and performance. Below are the available options categorized by function.
 
 ### Cache Options
 **`--cache-max-size`** (default: 10485760)  

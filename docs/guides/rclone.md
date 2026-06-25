@@ -1,10 +1,10 @@
-# Setting Up Teldrive with Rclone
+# Setting Up BDrive with Rclone
 
-Teldrive integrates with rclone, allowing you to use your Telegram storage with familiar rclone commands and features.
+BDrive integrates with rclone, allowing you to use your Telegram storage with familiar rclone commands and features.
 
 ## Installation
 
-Install the Teldrive rclone remote using one of these methods:
+Install the BDrive rclone remote using one of these methods:
 
 ::: code-group
 ```sh [macOS/Linux (curl)]
@@ -41,7 +41,7 @@ Configure rclone under the `[teldrive]` section in your rclone config file:
 | Option | Description |
 |--------|-------------|
 | **`type`** | Must be "teldrive" |
-| **`api_host`** | Host address of TelDrive API (default: "http://localhost:8080") |
+| **`api_host`** | Host address of BDrive API (default: "http://localhost:8080") |
 | **`access_token`** | Session token from cookies for authentication |
 | **`chunk_size`** | Maximum size for file chunks (default: "500M", max: "2GB") |
 | **`upload_concurrency`** | Number of concurrent uploads (default: 4) |
@@ -65,6 +65,6 @@ random_chunk_name = true
 > [!IMPORTANT]
 > To obtain your session token easily:
 > 1. Install the [Cookie Editor](https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm) extension for Chrome or Firefox
-> 2. Visit your Teldrive website
+> 2. Visit your BDrive website
 > 3. Open the extension and copy the value from the cookie named `access_token`
 > 4. Alternatively, find the token in your browser's developer tools in the cookies section

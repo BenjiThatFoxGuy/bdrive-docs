@@ -1,6 +1,6 @@
-# Deploying Teldrive with Cloudflare and Caddy
+# Deploying BDrive with Cloudflare and Caddy
 
-This guide walks you through deploying Teldrive with Cloudflare for DNS, CDN, and DDoS protection, and Caddy as a reverse proxy using Docker Compose. This setup provides robust, secure, and easy-to-manage hosting for your Teldrive instance.
+This guide walks you through deploying BDrive with Cloudflare for DNS, CDN, and DDoS protection, and Caddy as a reverse proxy using Docker Compose. This setup provides robust, secure, and easy-to-manage hosting for your BDrive instance.
 
 ## Prerequisites
 
@@ -80,7 +80,7 @@ Create these files in the same directory, adjusting configurations as needed:
 ```yml [teldrive.yml]
 services:
   teldrive:
-    image: ghcr.io/tgdrive/teldrive
+    image: ghcr.io/benjithatfoxguy/bdrive
     restart: always
     container_name: teldrive
     networks:
@@ -163,8 +163,8 @@ docker compose -f caddy.yml up -d
 ```
 
 * Replace `yourdomain.com` with your actual domain in the Caddyfile
-* Access Teldrive at `https://teldrive.yourdomain.com`
-* Update the Resizer host to `https://imgproxy.yourdomain.com` in Teldrive UI settings
+* Access BDrive at `https://teldrive.yourdomain.com`
+* Update the Resizer host to `https://imgproxy.yourdomain.com` in BDrive UI settings
 
 ## Advanced 
 - You can make use of caddy l4 module to use same port  443 or 80 port for postgres and enable tls for secure connections.
@@ -212,7 +212,7 @@ imgproxy.yourdomain.com {
 ## Troubleshooting
 
 * **DNS Issues:** Ensure your domain is pointing to your server's IP address
-* **Teldrive Errors:** Check logs with `docker logs teldrive -f`
+* **BDrive Errors:** Check logs with `docker logs teldrive -f`
 * **Caddy Errors:** Check logs with `docker logs caddy -f`
 * **Firewall Issues:** Ensure ports 80 and 443 are open on your server
 * **Cloudflare Configuration:** Double-check your Cloudflare settings if experiencing issues

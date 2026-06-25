@@ -1,6 +1,6 @@
-# Teldrive
+# BDrive
 
-Teldrive is a powerful utility that enables you to organize your Telegram files and unlock their full potential as cloud storage.
+BDrive is a powerful utility that enables you to organize your Telegram files and unlock their full potential as cloud storage.
 
 ## Features
 
@@ -48,6 +48,6 @@ Protect your files with robust encryption:
 
 <br>
 
-[UI Repository](https://github.com/tgdrive/teldrive-ui)
+[UI Repository](https://github.com/BenjiThatFoxGuy/bdrive-ui)
 
 [UI Component Library](https://github.com/divyam234/tw-material)

@@ -1,6 +1,6 @@
-# Teldrive Usage Guide
+# BDrive Usage Guide
 
-This guide will help you set up and configure Teldrive. Make sure you've completed all prerequisites before proceeding.
+This guide will help you set up and configure BDrive. Make sure you've completed all prerequisites before proceeding.
 
 ## Configuration
 
@@ -48,7 +48,7 @@ encryption-key = "your-encryption-key"
 > [!NOTE]  
 > - For local database connection strings, refer to the [prerequisites guide](/docs/getting-started/prerequisites#creating-a-local-posgtres-instance-using-docker)
 > - For advanced configuration options, see the [CLI reference](/docs/cli/run.md)
-> - View a complete sample configuration at the [GitHub repository](https://github.com/tgdrive/teldrive/blob/main/config.sample.toml)
+> - View a complete sample configuration at the [GitHub repository](https://github.com/BenjiThatFoxGuy/bdrive/blob/main/config.sample.toml)
 
 ## Generate Secret Keys
 
@@ -68,7 +68,7 @@ Create a `docker-compose.yml` file:
 ```yml [docker-compose.yml]
 services:
   teldrive:
-    image: ghcr.io/tgdrive/teldrive
+    image: ghcr.io/benjithatfoxguy/bdrive
     restart: always
     container_name: teldrive
     networks:
@@ -84,7 +84,7 @@ networks:
 ```
 :::
 
-Start Teldrive:
+Start BDrive:
 ```sh
 # Remove networks block from docker-compose.yml if using Supabase
 touch storage.db
@@ -93,15 +93,15 @@ docker compose up -d
 
 ## Running Without Docker 
 
-If you installed Teldrive directly:
+If you installed BDrive directly:
 
 ```sh
 ./teldrive run
 ```
 
-You can also place your config at `$HOME/.teldrive/config.toml` to run Teldrive from any location.
+You can also place your config at `$HOME/.teldrive/config.toml` to run BDrive from any location.
 
-## Accessing Teldrive
+## Accessing BDrive
 
 1. Open http://localhost:8080 in your browser
 2. Log in with your Telegram account
