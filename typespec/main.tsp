@@ -922,6 +922,11 @@ interface Shares {
     @path fileId: string,
     @query download?: "0" | "1" = "0",
   ): FileStream | Error;
+
+  @route("/{id}/zip")
+  @post
+  @summary("Download multiple shared files bundled as a zip archive")
+  downloadZip(@path id: string, @body body: FileZipDownload): ZipStream | Error;
 }
 
 
