@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Teldrive",
+    "title": "BDrive",
     "version": "0.0.0"
   },
   "tags": [
@@ -3487,7 +3487,7 @@
   "servers": [
     {
       "url": "{url}/api",
-      "description": "Teldrive Server URL",
+      "description": "BDrive Server URL",
       "variables": {
         "url": {
           "default": ""

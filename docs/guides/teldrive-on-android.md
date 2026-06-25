@@ -121,4 +121,4 @@ nano config.toml
 ## Accessing BDrive
 
 - Open http://localhost:8080 in your browser.
-> See the main guide:  [Here](docs/getting-started/usage#accessing-teldrive)
+> See the main guide:  [Here](docs/getting-started/usage#accessing-bdrive)
