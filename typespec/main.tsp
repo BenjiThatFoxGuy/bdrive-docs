@@ -60,6 +60,26 @@ model FileStream {
   lastModified: utcDateTime;
 }
 
+@doc("Zip archive streaming response")
+model ZipStream {
+  @doc("The zip archive content as binary data")
+  @body
+  content: bytes;
+
+  @statusCode
+  statusCode: 200;
+
+  @header("Content-Type")
+  @doc("The MIME type of the archive")
+  @example("application/zip")
+  contentType: "application/zip";
+
+  @header("Content-Disposition")
+  @doc("Archive attachment information")
+  @example("attachment; filename=\"download.zip\"")
+  contentDisposition: string;
+}
+
 @error
 @doc("Standard error response")
 model Error {
@@ -460,6 +480,14 @@ model FileDelete {
   ids: string[];
 }
 
+@doc("Zip download request")
+@example(#{ ids: #["123e4567-e89b-12d3-a456-426614174000"] })
+model FileZipDownload {
+  @doc("Array of file ids to bundle into a zip archive")
+  @minItems(1)
+  ids: string[];
+}
+
 @doc("Request to create directories")
 @example(#{ path: "/Documents/2023/" })
 model FileMkDir {
@@ -562,6 +590,11 @@ interface Files {
   @post
   @summary("Delete files")
   delete(@body body: FileDelete): NoContentResponse | Error;
+
+  @route("/zip")
+  @post
+  @summary("Download multiple files bundled as a zip archive")
+  downloadZip(@body body: FileZipDownload): ZipStream | Error;
 
   @route("/move")
   @post
@@ -991,4 +1024,20 @@ interface Version {
   @get
   @summary("Get API version")
   version(): ApiVersion | Error;
+}
+
+@doc("Server-controlled feature flags exposed to clients")
+model ServerConfig {
+  @doc("Whether the server can bundle multiple files into a zip for download")
+  @example(true)
+  zipDownloadEnabled: boolean;
+}
+
+@route("/config")
+@tag("Config")
+interface Config {
+  @route("")
+  @get
+  @summary("Get public server configuration")
+  config(): ServerConfig | Error;
 }

@@ -25,6 +25,9 @@
     },
     {
       "name": "Version"
+    },
+    {
+      "name": "Config"
     }
   ],
   "paths": {
@@ -187,6 +190,38 @@
         },
         "tags": [
           "Auth"
+        ]
+      }
+    },
+    "/config": {
+      "get": {
+        "operationId": "Config_config",
+        "summary": "Get public server configuration",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerConfig"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Config"
         ]
       }
     },
@@ -602,6 +637,66 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/FileMove"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/files/zip": {
+      "post": {
+        "operationId": "Files_downloadZip",
+        "summary": "Download multiple files bundled as a zip archive",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Zip archive streaming response",
+            "headers": {
+              "Content-Disposition": {
+                "required": true,
+                "description": "Archive attachment information",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Files"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FileZipDownload"
               }
             }
           }
@@ -3125,6 +3220,28 @@
         },
         "description": "File update request"
       },
+      "FileZipDownload": {
+        "type": "object",
+        "required": [
+          "ids"
+        ],
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "description": "Array of file ids to bundle into a zip archive"
+          }
+        },
+        "description": "Zip download request",
+        "example": {
+          "ids": [
+            "123e4567-e89b-12d3-a456-426614174000"
+          ]
+        }
+      },
       "Meta": {
         "type": "object",
         "required": [
@@ -3172,6 +3289,20 @@
           }
         },
         "description": "File part information"
+      },
+      "ServerConfig": {
+        "type": "object",
+        "required": [
+          "zipDownloadEnabled"
+        ],
+        "properties": {
+          "zipDownloadEnabled": {
+            "type": "boolean",
+            "description": "Whether the server can bundle multiple files into a zip for download",
+            "example": true
+          }
+        },
+        "description": "Server-controlled feature flags exposed to clients"
       },
       "Session": {
         "type": "object",
