@@ -240,6 +240,11 @@ model FileQuery {
   shared?: boolean;
 
   @query
+  @doc("Show only starred files")
+  @example(false)
+  starred?: boolean;
+
+  @query
   @doc("Parent folder ID")
   @example("123e4567-e89b-12d3-a456-426614174000")
   parentId?: string;
@@ -338,6 +343,10 @@ model File {
   @example(false)
   encrypted?: boolean;
 
+  @doc("Starred status")
+  @example(false)
+  starred?: boolean;
+
   @doc("BLAKE3 tree hash for integrity checking")
   @example("d41d8cd98f00b204e9800998ecf8427e")
   hash?: string;
@@ -433,6 +442,9 @@ model FileUpdate {
 
   @doc("Indicates if the file is encrypted")
   encrypted?: boolean;
+
+  @doc("Indicates if the file is starred")
+  starred?: boolean;
 
   @doc("File size in bytes")
   @example(1048576)

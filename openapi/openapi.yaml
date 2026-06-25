@@ -217,6 +217,7 @@ paths:
         - $ref: '#/components/parameters/FileQuery.status'
         - $ref: '#/components/parameters/FileQuery.deepSearch'
         - $ref: '#/components/parameters/FileQuery.shared'
+        - $ref: '#/components/parameters/FileQuery.starred'
         - $ref: '#/components/parameters/FileQuery.parentId'
         - $ref: '#/components/parameters/FileQuery.category'
         - $ref: '#/components/parameters/FileQuery.updatedAt'
@@ -1546,6 +1547,14 @@ components:
           - id
         default: name
       explode: false
+    FileQuery.starred:
+      name: starred
+      in: query
+      required: false
+      description: Show only starred files
+      schema:
+        type: boolean
+      explode: false
     FileQuery.status:
       name: status
       in: query
@@ -1890,6 +1899,10 @@ components:
           type: boolean
           description: Encryption status
           example: false
+        starred:
+          type: boolean
+          description: Starred status
+          example: false
         hash:
           type: string
           description: BLAKE3 tree hash for integrity checking
@@ -2092,6 +2105,9 @@ components:
         encrypted:
           type: boolean
           description: Indicates if the file is encrypted
+        starred:
+          type: boolean
+          description: Indicates if the file is starred
         size:
           type: integer
           format: int64
