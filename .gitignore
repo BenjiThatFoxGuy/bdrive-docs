@@ -12,3 +12,4 @@ $RECYCLE.BIN/
 
 dist
 .aider*
+package-lock.json
