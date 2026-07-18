@@ -3017,6 +3017,12 @@
             "description": "BLAKE3 tree hash for integrity checking",
             "example": "d41d8cd98f00b204e9800998ecf8427e"
           },
+          "referencedFileId": {
+            "type": "string",
+            "description": "ID of the canonical file this is a deduplicated reference to, if any",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "readOnly": true
+          },
           "updatedAt": {
             "type": "string",
             "format": "date-time",
