@@ -627,6 +627,12 @@ interface Files {
   @get
   @summary("Get category stats")
   categoryStats(): CategoryStats[] | Error;
+
+  @route("/{id}/duplicates")
+  @get
+  @summary("List files that share content with this file")
+  @doc("Returns other active, non-encrypted files owned by the same user that have the same content hash as the given file.")
+  duplicates(@path id: string): FileDuplicates | Error;
 }
 
 @doc("Query parameters for file upload")
@@ -1062,4 +1068,120 @@ interface Config {
   @get
   @summary("Get public server configuration")
   config(): ServerConfig | Error;
+}
+
+@doc("Files that share content with a given file")
+model FileDuplicates {
+  @doc("Other active, non-encrypted files owned by the same user that have the same content hash")
+  items: File[];
+}
+
+@doc("Statistics describing a deduplication run or the current dedup state")
+model DedupStats {
+  @doc("Number of users examined")
+  @example(1)
+  processedUsers: int64;
+
+  @doc("Number of distinct content hashes for which more than one active file exists")
+  @example(3)
+  duplicateGroups: int64;
+
+  @doc("Number of files linked to a canonical copy via referencedFileId")
+  @example(5)
+  totalFilesLinked: int64;
+
+  @doc("Number of previously hash-less files that had a hash computed this run")
+  @example(2)
+  hashesBackfilled: int64;
+
+  @doc("Number of files that could not be processed")
+  @example(0)
+  skippedFiles: int64;
+}
+
+@doc("Options controlling a deduplication run")
+model DedupJobOptions {
+  @doc("Compute and report what would change without writing anything to the database")
+  @example(false)
+  dryRun?: boolean = false;
+
+  @doc("Compute and persist hashes for files lacking one before grouping (reads content back from Telegram)")
+  @example(false)
+  backfill?: boolean = false;
+
+  @doc("Restrict the run to a single Telegram username (admin only). Defaults to the caller's own files.")
+  @example("alice")
+  user?: string;
+
+  @doc("Run against all users (admin only)")
+  @example(false)
+  allUsers?: boolean = false;
+}
+
+@doc("Lifecycle status of a deduplication job")
+enum DedupJobStatus {
+  pending,
+  running,
+  completed,
+  failed,
+}
+
+@doc("An asynchronous deduplication job")
+model DedupJob {
+  @doc("Job ID")
+  @example("123e4567-e89b-12d3-a456-426614174000")
+  @visibility(Lifecycle.Read)
+  id: string;
+
+  @doc("Current status of the job")
+  @visibility(Lifecycle.Read)
+  status: DedupJobStatus;
+
+  @doc("Options the job was started with")
+  options: DedupJobOptions;
+
+  @doc("Statistics accumulated so far; final once status is 'completed'")
+  @visibility(Lifecycle.Read)
+  stats: DedupStats;
+
+  @doc("Error message when status is 'failed'")
+  @visibility(Lifecycle.Read)
+  error?: string;
+
+  @doc("When the job started")
+  @visibility(Lifecycle.Read)
+  startedAt: utcDateTime;
+
+  @doc("When the job finished; absent while pending or running")
+  @visibility(Lifecycle.Read)
+  finishedAt?: utcDateTime;
+}
+
+@route("/dedup")
+@tag("Dedup")
+@useAuth(ApiAuth)
+interface Dedup {
+  @route("/jobs")
+  @post
+  @summary("Start a deduplication job")
+  @doc("Starts an asynchronous deduplication run and returns the created job. Poll GET /dedup/jobs/{id} for progress. Targeting another user or all users is admin-only and not yet enabled.")
+  startJob(@body body: DedupJobOptions): {
+    ...DedupJob;
+    @statusCode _: 201;
+  } | Error;
+
+  @route("/jobs")
+  @get
+  @summary("List recent deduplication jobs")
+  listJobs(): DedupJob[] | Error;
+
+  @route("/jobs/{id}")
+  @get
+  @summary("Get a deduplication job by ID")
+  getJob(@path id: string): DedupJob | Error;
+
+  @route("/stats")
+  @get
+  @summary("Get current deduplication stats for the caller")
+  stats(): DedupStats | Error;
 }

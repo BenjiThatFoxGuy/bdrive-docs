@@ -39,6 +39,18 @@ A file's `hash` is a BLAKE3 tree hash of its content. It can end up populated th
 3. **Direct-parts creation**: a file can also be created by supplying a `parts` array directly instead of going through the upload-and-hash flow above. In this case the server best-effort computes a hash immediately after creation by reading the file's just-uploaded parts back from Telegram. This is a real, API-exposed creation path (not just a test fixture), so files created this way are hashed too — but because it requires an extra round-trip read of the content, a failure here is logged and swallowed rather than failing the file creation.
 4. **`--backfill` (this command)**: for files that predate hashing entirely, or that fell through path 3's best-effort attempt, `--backfill` sweeps them up by reading their content back from Telegram and computing the hash after the fact.
 
+## Web UI (Settings → Deduplication)
+
+The same retroactive deduplication is available from the web UI under **Settings → Deduplication**, so you don't have to drop to the CLI. The tab has three parts:
+
+- **Stats overview** — a read-only summary of the current dedup state for your account: how many duplicate groups exist and how many files are already linked to a canonical copy (backed by `GET /dedup/stats`).
+- **Run deduplication** — toggles for **Dry run** and **Backfill** (mirroring `--dry-run` and `--backfill`), plus a **Run** button. Because a run — especially with backfill — can take minutes while content is re-read from Telegram, runs execute **asynchronously**: starting one creates a job (`POST /dedup/jobs`) and the tab polls its status (`GET /dedup/jobs/{id}`) until it finishes, showing the same summary counts the CLI prints.
+- **Per-file duplicates** — from a file's actions menu, **View duplicates** lists other files that share the same content hash (`GET /files/{id}/duplicates`), backed by the same grouping logic the command uses.
+
+::: warning Admin targeting not yet enabled
+The CLI can target a specific user or all users. The web UI currently runs deduplication only against **your own files** — the "target another user / all users" controls are present but disabled, pending an admin-authorization mechanism (BDrive has no admin role concept yet). Requests that try to target other users are rejected server-side.
+:::
+
 ## Behavior Notes and Limitations
 
 - **Copy-on-write**: if a file's content is later modified while it has a `referencedFileId` set, the reference is cleared and the file becomes its own canonical copy. If the new content happens to match a *different* existing file's hash, it's re-linked to that file instead.
