@@ -1959,6 +1959,11 @@ components:
             - $ref: '#/components/schemas/DedupStats'
           description: Statistics accumulated so far; final once status is 'completed'
           readOnly: true
+        progress:
+          allOf:
+            - $ref: '#/components/schemas/DedupProgress'
+          description: Live progress while running; absent while pending and once finished
+          readOnly: true
         error:
           type: string
           description: Error message when status is 'failed'
@@ -2005,6 +2010,37 @@ components:
         - completed
         - failed
       description: Lifecycle status of a deduplication job
+    DedupPhase:
+      type: string
+      enum:
+        - loading
+        - backfilling
+        - grouping
+        - linking
+        - done
+      description: Phase of work a running deduplication job is currently in
+    DedupProgress:
+      type: object
+      required:
+        - phase
+        - current
+        - total
+      properties:
+        phase:
+          allOf:
+            - $ref: '#/components/schemas/DedupPhase'
+          description: Phase of work currently in progress
+        current:
+          type: integer
+          format: int64
+          description: Items processed so far within the current phase
+          example: 12
+        total:
+          type: integer
+          format: int64
+          description: Total items to process in the current phase; 0 when not countable (e.g. loading, grouping)
+          example: 40
+      description: Live progress of a running deduplication job
     DedupStats:
       type: object
       required:
