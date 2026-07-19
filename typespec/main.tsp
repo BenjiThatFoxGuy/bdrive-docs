@@ -1126,6 +1126,38 @@ enum DedupJobStatus {
   failed,
 }
 
+@doc("Phase of work a running deduplication job is currently in")
+enum DedupPhase {
+  @doc("Loading the candidate files from the database")
+  loading,
+
+  @doc("Computing and persisting hashes for files that lack one")
+  backfilling,
+
+  @doc("Grouping files by content hash")
+  grouping,
+
+  @doc("Linking duplicate files to their canonical copy")
+  linking,
+
+  @doc("Work has finished")
+  done,
+}
+
+@doc("Live progress of a running deduplication job")
+model DedupProgress {
+  @doc("Phase of work currently in progress")
+  phase: DedupPhase;
+
+  @doc("Items processed so far within the current phase")
+  @example(12)
+  current: int64;
+
+  @doc("Total items to process in the current phase; 0 when not countable (e.g. loading, grouping)")
+  @example(40)
+  total: int64;
+}
+
 @doc("An asynchronous deduplication job")
 model DedupJob {
   @doc("Job ID")
@@ -1143,6 +1175,10 @@ model DedupJob {
   @doc("Statistics accumulated so far; final once status is 'completed'")
   @visibility(Lifecycle.Read)
   stats: DedupStats;
+
+  @doc("Live progress while running; absent while pending and once finished")
+  @visibility(Lifecycle.Read)
+  progress?: DedupProgress;
 
   @doc("Error message when status is 'failed'")
   @visibility(Lifecycle.Read)
