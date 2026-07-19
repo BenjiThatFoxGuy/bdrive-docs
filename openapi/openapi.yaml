@@ -11,6 +11,7 @@ tags:
   - name: Events
   - name: Version
   - name: Config
+  - name: Dedup
 paths:
   /auth/login:
     post:
@@ -132,6 +133,111 @@ paths:
                 $ref: '#/components/schemas/Error'
       tags:
         - Config
+  /dedup/jobs:
+    post:
+      operationId: Dedup_startJob
+      summary: Start a deduplication job
+      description: Starts an asynchronous deduplication run and returns the created job. Poll GET /dedup/jobs/{id} for progress. Targeting another user or all users is admin-only and not yet enabled.
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DedupJob'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Dedup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DedupJobOptions'
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+    get:
+      operationId: Dedup_listJobs
+      summary: List recent deduplication jobs
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DedupJob'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Dedup
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+  /dedup/jobs/{id}:
+    get:
+      operationId: Dedup_getJob
+      summary: Get a deduplication job by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DedupJob'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Dedup
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+  /dedup/stats:
+    get:
+      operationId: Dedup_stats
+      summary: Get current deduplication stats for the caller
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DedupStats'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Dedup
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
   /events:
     get:
       operationId: Events_getEvents
@@ -499,6 +605,35 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/FileCopy'
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+  /files/{id}/duplicates:
+    get:
+      operationId: Files_duplicates
+      summary: List files that share content with this file
+      description: Returns other active, non-encrypted files owned by the same user that have the same content hash as the given file.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileDuplicates'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Files
       security:
         - BearerAuth: []
         - ApiKeyAuth: []
@@ -1796,6 +1931,115 @@ components:
       example:
         channelName: Channel Name
         channelId: 123456789
+    DedupJob:
+      type: object
+      required:
+        - id
+        - status
+        - options
+        - stats
+        - startedAt
+      properties:
+        id:
+          type: string
+          description: Job ID
+          example: 123e4567-e89b-12d3-a456-426614174000
+          readOnly: true
+        status:
+          allOf:
+            - $ref: '#/components/schemas/DedupJobStatus'
+          description: Current status of the job
+          readOnly: true
+        options:
+          allOf:
+            - $ref: '#/components/schemas/DedupJobOptions'
+          description: Options the job was started with
+        stats:
+          allOf:
+            - $ref: '#/components/schemas/DedupStats'
+          description: Statistics accumulated so far; final once status is 'completed'
+          readOnly: true
+        error:
+          type: string
+          description: Error message when status is 'failed'
+          readOnly: true
+        startedAt:
+          type: string
+          format: date-time
+          description: When the job started
+          readOnly: true
+        finishedAt:
+          type: string
+          format: date-time
+          description: When the job finished; absent while pending or running
+          readOnly: true
+      description: An asynchronous deduplication job
+    DedupJobOptions:
+      type: object
+      properties:
+        dryRun:
+          type: boolean
+          description: Compute and report what would change without writing anything to the database
+          example: false
+          default: false
+        backfill:
+          type: boolean
+          description: Compute and persist hashes for files lacking one before grouping (reads content back from Telegram)
+          example: false
+          default: false
+        user:
+          type: string
+          description: Restrict the run to a single Telegram username (admin only). Defaults to the caller's own files.
+          example: alice
+        allUsers:
+          type: boolean
+          description: Run against all users (admin only)
+          example: false
+          default: false
+      description: Options controlling a deduplication run
+    DedupJobStatus:
+      type: string
+      enum:
+        - pending
+        - running
+        - completed
+        - failed
+      description: Lifecycle status of a deduplication job
+    DedupStats:
+      type: object
+      required:
+        - processedUsers
+        - duplicateGroups
+        - totalFilesLinked
+        - hashesBackfilled
+        - skippedFiles
+      properties:
+        processedUsers:
+          type: integer
+          format: int64
+          description: Number of users examined
+          example: 1
+        duplicateGroups:
+          type: integer
+          format: int64
+          description: Number of distinct content hashes for which more than one active file exists
+          example: 3
+        totalFilesLinked:
+          type: integer
+          format: int64
+          description: Number of files linked to a canonical copy via referencedFileId
+          example: 5
+        hashesBackfilled:
+          type: integer
+          format: int64
+          description: Number of previously hash-less files that had a hash computed this run
+          example: 2
+        skippedFiles:
+          type: integer
+          format: int64
+          description: Number of files that could not be processed
+          example: 0
+      description: Statistics describing a deduplication run or the current dedup state
     Error:
       type: object
       required:
@@ -1907,6 +2151,11 @@ components:
           type: string
           description: BLAKE3 tree hash for integrity checking
           example: d41d8cd98f00b204e9800998ecf8427e
+        referencedFileId:
+          type: string
+          description: ID of the canonical file this is a deduplicated reference to, if any
+          example: 123e4567-e89b-12d3-a456-426614174000
+          readOnly: true
         updatedAt:
           type: string
           format: date-time
@@ -1947,6 +2196,17 @@ components:
       example:
         ids:
           - 123e4567-e89b-12d3-a456-426614174000
+    FileDuplicates:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+          description: Other active, non-encrypted files owned by the same user that have the same content hash
+      description: Files that share content with a given file
     FileList:
       type: object
       required:
