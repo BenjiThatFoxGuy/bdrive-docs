@@ -505,6 +505,18 @@ model FileZipDownload {
   ids: string[];
 }
 
+// Zip downloads are form-encoded rather than JSON so a browser can submit them
+// from a plain <form>. A fetch() response has to be buffered in memory before it
+// can be saved, which defeats the server's streaming for large archives; a form
+// submission lets the browser write the response straight to disk and honour the
+// Content-Disposition filename.
+@doc("Zip download request, form-encoded so browsers can stream the response to disk")
+model FileZipDownloadForm {
+  @header contentType: "application/x-www-form-urlencoded";
+
+  @body body: FileZipDownload;
+}
+
 @doc("Request to create directories")
 @example(#{ path: "/Documents/2023/" })
 model FileMkDir {
@@ -611,7 +623,7 @@ interface Files {
   @route("/zip")
   @post
   @summary("Download multiple files bundled as a zip archive")
-  downloadZip(@body body: FileZipDownload): ZipStream | Error;
+  downloadZip(...FileZipDownloadForm): ZipStream | Error;
 
   @route("/move")
   @post
@@ -949,7 +961,7 @@ interface Shares {
   @route("/{id}/zip")
   @post
   @summary("Download multiple shared files bundled as a zip archive")
-  downloadZip(@path id: string, @body body: FileZipDownload): ZipStream | Error;
+  downloadZip(@path id: string, ...FileZipDownloadForm): ZipStream | Error;
 }
 
 
