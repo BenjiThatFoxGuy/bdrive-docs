@@ -83,3 +83,39 @@ docker compose up -d
 For better performance:
 - Deploy imgproxy behind Cloudflare or another web server with caching
 - Enter the URL of your deployed resizer service in the BDrive UI settings
+
+## Zip Downloads
+
+BDrive bundles multiple files — or a whole folder — into a single archive on the server and streams
+it straight to the browser. Nothing is buffered to disk or to memory, so a folder larger than the
+server's RAM downloads fine.
+
+This is on by default. Only set these if you want to change that:
+
+```toml
+[files]
+enable-zip-download = true
+zip-max-files = 10000
+zip-max-size = 0
+zip-max-concurrent = 4
+```
+
+- `enable-zip-download` — turn the feature off entirely. The **Download as Zip** action disappears
+  from the UI, and both zip endpoints return `403`.
+- `zip-max-files` — reject a request that would bundle more than this many files. Set `0` for no
+  limit.
+- `zip-max-size` — reject a request whose total uncompressed size exceeds this many bytes. Set `0`
+  for no limit.
+- `zip-max-concurrent` — how many archives may stream at once. Requests beyond this get `503`
+  rather than queueing. Set `0` for no limit.
+
+Both limits are checked before the response starts, so an oversized request gets a proper `413`
+instead of a download that dies part-way through.
+
+> [!NOTE]
+> Already-compressed files (video, images, audio, archives) are stored in the zip rather than
+> deflated. Re-compressing them costs CPU and saves nothing.
+
+> [!TIP]
+> Share links can be zipped too. If the share owner has no bot tokens configured, BDrive falls back
+> to their own Telegram session, so zipping works either way.

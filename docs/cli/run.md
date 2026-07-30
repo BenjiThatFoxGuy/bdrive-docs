@@ -51,6 +51,19 @@ Maximum number of open connections.
 **`--db-prepare-stmt`** (default: true)  
 Enable prepared statements for better performance.
 
+### File Options
+**`--files-enable-zip-download`** (default: true)  
+Allow downloading multiple files bundled as a zip archive.
+
+**`--files-zip-max-files`** (default: 10000)  
+Maximum number of files allowed in a single zip download. Set to 0 to disable the limit.
+
+**`--files-zip-max-size`** (default: 0)  
+Maximum total uncompressed size in bytes for a single zip download. Set to 0 to disable the limit.
+
+**`--files-zip-max-concurrent`** (default: 4)  
+Maximum number of zip downloads streaming at the same time. Set to 0 to disable the limit.
+
 ### JWT Authentication
 **`--jwt-allowed-users`**  
 List of Telegram usernames allowed to access the service.
