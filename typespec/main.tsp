@@ -388,9 +388,12 @@ model FileShareCreate {
   @doc("Share expiration date")
   expiresAt?: utcDateTime;
 
-  @doc("Shortlink code. Omit to leave shortlink mode off, pass an empty string to auto-generate one, or pass a custom slug (4-32 chars, alphanumeric only, no dashes).")
+  @doc("Shortlink code to set. On create, omit for no shortlink, pass an empty string to auto-generate one, or pass a custom slug (4-32 chars, alphanumeric only, no dashes). On edit, omit to leave the existing shortlink state untouched; use clearShortCode to remove it instead of passing an empty string here.")
   @example("a1b2c3d")
   shortCode?: string;
+
+  @doc("Edit only: when true, removes any shortlink code from the share (reverting it to a standard share) regardless of what shortCode contains. Also resets blockDirectLink/alwaysDirectLink/allowZipDownload to false.")
+  clearShortCode?: boolean;
 
   @doc("File-type shortlinks only: force ALL user agents to the viewer, never raw bytes. Mutually exclusive with alwaysDirectLink — setting both true makes this one win.")
   blockDirectLink?: boolean;
