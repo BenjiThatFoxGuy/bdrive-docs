@@ -387,6 +387,22 @@ model FileShareCreate {
 
   @doc("Share expiration date")
   expiresAt?: utcDateTime;
+
+  @doc("Shortlink code to set. On create, omit for no shortlink, pass an empty string to auto-generate one, or pass a custom slug (4-32 chars, alphanumeric only, no dashes). On edit, omit to leave the existing shortlink state untouched; use clearShortCode to remove it instead of passing an empty string here.")
+  @example("a1b2c3d")
+  shortCode?: string;
+
+  @doc("Edit only: when true, removes any shortlink code from the share (reverting it to a standard share) regardless of what shortCode contains. Also resets blockDirectLink/alwaysDirectLink/allowZipDownload to false.")
+  clearShortCode?: boolean;
+
+  @doc("File-type shortlinks only: force ALL user agents to the viewer, never raw bytes. Mutually exclusive with alwaysDirectLink — setting both true makes this one win.")
+  blockDirectLink?: boolean;
+
+  @doc("File-type shortlinks only: force ALL user agents to raw bytes, bypassing the viewer entirely. Mutually exclusive with blockDirectLink. Not applicable to folder shares.")
+  alwaysDirectLink?: boolean;
+
+  @doc("Folder-type shortlinks only: allow zip downloads for this share. Also gates the Download-as-Zip action in the regular shared-folder viewer for this share, and — once enabled — unlocks blockDirectLink/alwaysDirectLink for this folder targeting the zip stream.")
+  allowZipDownload?: boolean;
 }
 
 @doc("File sharing information and settings")
@@ -412,6 +428,19 @@ model FileShare {
 
   @doc("Expiration date and time of the share link")
   expiresAt?: utcDateTime;
+
+  @doc("Shortlink code, if one is set on this share")
+  @example("a1b2c3d")
+  shortCode?: string;
+
+  @doc("File-type shortlinks only: force ALL user agents to the viewer, never raw bytes")
+  blockDirectLink?: boolean;
+
+  @doc("File-type shortlinks only: force ALL user agents to raw bytes, bypassing the viewer")
+  alwaysDirectLink?: boolean;
+
+  @doc("Folder-type shortlinks only: whether zip downloads are allowed for this share")
+  allowZipDownload?: boolean;
 }
 
 @doc("Paginated file listing response with metadata")
@@ -596,6 +625,11 @@ interface Files {
     @path id: string,
     @body body: FileShareCreate,
   ): CreatedResponse | Error;
+
+  @route("/{id}/share/suggest-code")
+  @get
+  @summary("Suggest an available shortlink code")
+  suggestShareCode(@path id: string): ShortCodeSuggestion | Error;
 
   @route("/{id}/copy")
   @post
@@ -892,11 +926,24 @@ model FileShareInfo {
   @doc("Share Protection Status")
   @example(false)
   protected: boolean;
+
+  @doc("Shortlink code, if one is set on this share")
+  @example("a1b2c3d")
+  shortCode?: string;
+
+  @doc("Folder-type shortlinks only: whether zip downloads are allowed for this share")
+  allowZipDownload?: boolean;
 }
 model ShareUnlock {
   @doc("Share password")
   @example("securepass123")
   password: string;
+}
+
+model ShortCodeSuggestion {
+  @doc("An available, not-yet-reserved shortlink code candidate")
+  @example("a1b2c3d")
+  code: string;
 }
 
 @doc("Share query parameters")
@@ -962,6 +1009,11 @@ interface Shares {
   @post
   @summary("Download multiple shared files bundled as a zip archive")
   downloadZip(@path id: string, ...FileZipDownloadForm): ZipStream | Error;
+
+  @route("/{id}/zip")
+  @get
+  @summary("Download the entire share bundled as a zip archive (no body — implies the whole shared folder)")
+  downloadZipDirect(@path id: string): ZipStream | Error;
 }
 
 
@@ -1071,6 +1123,10 @@ model ServerConfig {
   @doc("Whether the server can bundle multiple files into a zip for download")
   @example(true)
   zipDownloadEnabled: boolean;
+
+  @doc("Whether shortlink creation is available")
+  @example(true)
+  shortlinksEnabled: boolean;
 }
 
 @route("/config")
