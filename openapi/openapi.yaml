@@ -746,6 +746,34 @@ paths:
       security:
         - BearerAuth: []
         - ApiKeyAuth: []
+  /files/{id}/share/suggest-code:
+    get:
+      operationId: Files_suggestShareCode
+      summary: Suggest an available shortlink code
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortCodeSuggestion'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Files
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
   /files/{id}/{name}:
     get:
       operationId: Files_stream
@@ -1122,6 +1150,37 @@ paths:
           application/x-www-form-urlencoded:
             schema:
               $ref: '#/components/schemas/FileZipDownload'
+    get:
+      operationId: Shares_downloadZipDirect
+      summary: Download the entire share bundled as a zip archive (no body — implies the whole shared folder)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Zip archive streaming response
+          headers:
+            Content-Disposition:
+              required: true
+              description: Archive attachment information
+              schema:
+                type: string
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Shares
   /uploads/stats:
     get:
       operationId: Uploads_stats
@@ -2330,6 +2389,19 @@ components:
           type: string
           format: date-time
           description: Expiration date and time of the share link
+        shortCode:
+          type: string
+          description: Shortlink code, if one is set on this share
+          example: a1b2c3d
+        blockDirectLink:
+          type: boolean
+          description: 'File-type shortlinks only: force ALL user agents to the viewer, never raw bytes'
+        alwaysDirectLink:
+          type: boolean
+          description: 'File-type shortlinks only: force ALL user agents to raw bytes, bypassing the viewer'
+        allowZipDownload:
+          type: boolean
+          description: 'Folder-type shortlinks only: whether zip downloads are allowed for this share'
       description: File sharing information and settings
     FileShareCreate:
       type: object
@@ -2342,6 +2414,19 @@ components:
           type: string
           format: date-time
           description: Share expiration date
+        shortCode:
+          type: string
+          description: Shortlink code. Omit to leave shortlink mode off, pass an empty string to auto-generate one, or pass a custom slug (4-32 chars, alphanumeric only, no dashes).
+          example: a1b2c3d
+        blockDirectLink:
+          type: boolean
+          description: 'File-type shortlinks only: force ALL user agents to the viewer, never raw bytes. Mutually exclusive with alwaysDirectLink — setting both true makes this one win.'
+        alwaysDirectLink:
+          type: boolean
+          description: 'File-type shortlinks only: force ALL user agents to raw bytes, bypassing the viewer entirely. Mutually exclusive with blockDirectLink. Not applicable to folder shares.'
+        allowZipDownload:
+          type: boolean
+          description: 'Folder-type shortlinks only: allow zip downloads for this share. Also gates the Download-as-Zip action in the regular shared-folder viewer for this share, and — once enabled — unlocks blockDirectLink/alwaysDirectLink for this folder targeting the zip stream.'
       description: File share creation request
     FileShareInfo:
       type: object
@@ -2374,6 +2459,13 @@ components:
           type: boolean
           description: Share Protection Status
           example: false
+        shortCode:
+          type: string
+          description: Shortlink code, if one is set on this share
+          example: a1b2c3d
+        allowZipDownload:
+          type: boolean
+          description: 'Folder-type shortlinks only: whether zip downloads are allowed for this share'
     FileUpdate:
       type: object
       properties:
@@ -2470,10 +2562,15 @@ components:
       type: object
       required:
         - zipDownloadEnabled
+        - shortlinksEnabled
       properties:
         zipDownloadEnabled:
           type: boolean
           description: Whether the server can bundle multiple files into a zip for download
+          example: true
+        shortlinksEnabled:
+          type: boolean
+          description: Whether shortlink creation is available
           example: true
       description: Server-controlled feature flags exposed to clients
     Session:
@@ -2563,6 +2660,15 @@ components:
           type: string
           description: Share password
           example: securepass123
+    ShortCodeSuggestion:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          description: An available, not-yet-reserved shortlink code candidate
+          example: a1b2c3d
     Source:
       type: object
       required:
