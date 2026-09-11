@@ -1933,7 +1933,7 @@
       },
       "get": {
         "operationId": "Shares_downloadZipDirect",
-        "summary": "Download the entire share bundled as a zip archive (no body — implies the whole shared folder)",
+        "summary": "Download the entire share bundled as a zip archive (no body \u2014 implies the whole shared folder)",
         "parameters": [
           {
             "name": "id",
@@ -3785,7 +3785,7 @@
           },
           "blockDirectLink": {
             "type": "boolean",
-            "description": "File-type shortlinks only: force ALL user agents to the viewer, never raw bytes. Mutually exclusive with alwaysDirectLink — setting both true makes this one win."
+            "description": "File-type shortlinks only: force ALL user agents to the viewer, never raw bytes. Mutually exclusive with alwaysDirectLink \u2014 setting both true makes this one win."
           },
           "alwaysDirectLink": {
             "type": "boolean",
@@ -3793,7 +3793,7 @@
           },
           "allowZipDownload": {
             "type": "boolean",
-            "description": "Folder-type shortlinks only: allow zip downloads for this share. Also gates the Download-as-Zip action in the regular shared-folder viewer for this share, and — once enabled — unlocks blockDirectLink/alwaysDirectLink for this folder targeting the zip stream."
+            "description": "Folder-type shortlinks only: allow zip downloads for this share. Also gates the Download-as-Zip action in the regular shared-folder viewer for this share, and \u2014 once enabled \u2014 unlocks blockDirectLink/alwaysDirectLink for this folder targeting the zip stream."
           }
         },
         "description": "File share creation request"
@@ -3990,6 +3990,11 @@
             "type": "string",
             "description": "Public-facing base URL of the standalone alt-domain shortlink listener (e.g. https://go.example.com), if the operator has configured one. Absent when unset, even if shortlinksEnabled is true - the listener can run on a bare address with no public domain assigned yet.",
             "example": "https://go.example.com"
+          },
+          "resizerHost": {
+            "type": "string",
+            "description": "Base URL of the imgproxy/image resizer instance for thumbnails (e.g. https://imgproxy.example.com). Configured server-side so all clients use the same resizer.",
+            "example": "https://imgproxy.example.com"
           }
         },
         "description": "Server-controlled feature flags exposed to clients"
