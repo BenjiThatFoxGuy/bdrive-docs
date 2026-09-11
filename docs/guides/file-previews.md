@@ -19,6 +19,7 @@ same folder.
 | E-books | `epub` | |
 | Apple Wallet | `pkpass` | Rendered the way Wallet does |
 | 3D Models | `fbx`, `gltf`, `glb`, `obj`, `stl`, `ply`, `dae` | Interactive three.js viewer — see below |
+| Unity packages | `unitypackage` | Virtual folder browsing with asset extraction |
 
 ## Photoshop files
 
@@ -131,3 +132,29 @@ Zip browsing is enabled by default. Operators can disable it by setting
 | Maximum zip size | 500 MB |
 
 Zip files larger than 500 MB are available for download but cannot be browsed.
+
+## Unity packages
+
+`.unitypackage` files open as virtual folders, the same way zip files do. The
+server parses the package's internal tar.gz structure and reconstructs the
+original file tree from Unity's GUID-based layout, so you see human-readable
+paths like `Assets/Textures/wood.png` instead of raw GUIDs.
+
+Double-click a `.unitypackage` to browse it. Individual assets can be previewed
+(images, 3D models, etc.) or downloaded using the same viewers available
+elsewhere in the file browser.
+
+### How it works
+
+A Unity package is a gzipped tar archive. Each asset lives under a GUID-named
+folder containing a `pathname` file (the real path), an `asset` file (the
+payload), and optionally `asset.meta`. The server reads these entries and serves
+a reconstructed directory listing.
+
+### Limits
+
+| Limit | Value |
+|-------|-------|
+| Maximum package size | 500 MB |
+
+Packages larger than 500 MB are available for download but cannot be browsed.
