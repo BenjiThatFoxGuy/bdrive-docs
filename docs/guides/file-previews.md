@@ -18,6 +18,7 @@ same folder.
 | Code & text | `c`, `cpp`, `cs`, `css`, `diff`, `html`, `java`, `js`, `jsx`, `json`, `log`, `py`, `rs`, `sh`, `srt`, `toml`, `ts`, `tsx`, `txt`, `vtt`, `vue`, `yaml`, `yml` | Syntax highlighted |
 | E-books | `epub` | |
 | Apple Wallet | `pkpass` | Rendered the way Wallet does |
+| 3D Models | `fbx`, `gltf`, `glb`, `obj`, `stl`, `ply`, `dae` | Interactive three.js viewer — see below |
 
 ## Photoshop files
 
@@ -76,3 +77,31 @@ a moment longer. If such a file is also past the layer limits, it can't be
 previewed at all.
 
 `.psb` (Large Document Format) files are not supported.
+
+## 3D Models
+
+Clicking a 3D model file opens an interactive viewer built on three.js. The model
+loads into a scene with orbit, zoom, and pan controls.
+
+### Supported formats
+
+`fbx`, `gltf`, `glb`, `obj`, `stl`, `ply`, `dae` (Collada).
+
+### Viewer controls
+
+The toolbar above the viewport offers:
+
+| Control | Description |
+|---------|-------------|
+| **Lit / Unlit / Wireframe** | Switch between standard lighting, flat unlit, or wireframe rendering |
+| **Dark / Light / Alpha** | Change the background colour, or set it transparent |
+| **Light slider** | Adjust lighting intensity from 0 to 3 |
+| **Rotate** | Toggle automatic turntable rotation |
+| **Reset** | Return the camera to its initial framing |
+| **Fullscreen** | Toggle the viewer to fill the screen |
+
+An info bar below the viewport always shows vertex count, face count, and
+bounding-box dimensions.
+
+The model is auto-framed on load so it fits comfortably in the viewport, and a
+grid floor is scaled to the model's size for spatial reference.
