@@ -105,3 +105,29 @@ bounding-box dimensions.
 
 The model is auto-framed on load so it fits comfortably in the viewport, and a
 grid floor is scaled to the model's size for spatial reference.
+
+## Zip files
+
+Zip archives open as virtual folders in the file browser. Click a `.zip` file to
+navigate into it as if it were a directory — the same file browser UI shows the
+archive's contents, complete with folders you can click into.
+
+### How it works
+
+The server reads the zip's central directory without extracting the full archive,
+then serves file listings at each depth. Individual files inside the zip can be
+previewed or downloaded: images, PSD files, 3D models, and all other supported
+formats work exactly as they would outside the archive.
+
+### Configuration
+
+Zip browsing is enabled by default. Operators can disable it by setting
+`files.enableZipBrowsing: false` in the config.
+
+### Limits
+
+| Limit | Value |
+|-------|-------|
+| Maximum zip size | 500 MB |
+
+Zip files larger than 500 MB are available for download but cannot be browsed.
