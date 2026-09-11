@@ -2579,6 +2579,10 @@ components:
           type: string
           description: Public-facing base URL of the standalone alt-domain shortlink listener (e.g. https://go.example.com), if the operator has configured one. Absent when unset, even if shortlinksEnabled is true - the listener can run on a bare address with no public domain assigned yet.
           example: https://go.example.com
+        resizerHost:
+          type: string
+          description: Base URL of the imgproxy/image resizer instance for thumbnails (e.g. https://imgproxy.example.com). Configured server-side so all clients use the same resizer.
+          example: https://imgproxy.example.com
       description: Server-controlled feature flags exposed to clients
     Session:
       type: object
