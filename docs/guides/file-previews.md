@@ -19,7 +19,6 @@ same folder.
 | E-books | `epub` | |
 | Apple Wallet | `pkpass` | Rendered the way Wallet does |
 | 3D Models | `fbx`, `gltf`, `glb`, `obj`, `stl`, `ply`, `dae` | Interactive three.js viewer — see below |
-| Comics | `cbz` | Comic reader with ComicInfo.xml metadata |
 | Unity packages | `unitypackage` | Virtual folder browsing with asset extraction |
 
 ## Photoshop files
@@ -108,26 +107,10 @@ bounding-box dimensions.
 The model is auto-framed on load so it fits comfortably in the viewport, and a
 grid floor is scaled to the model's size for spatial reference.
 
-## Archive browsing configuration
-
-Archive browsing (zip, CBZ, and Unity packages) is controlled by a master switch
-and per-format flags:
-
-| Config key | Default | Description |
-|-----------|---------|-------------|
-| `files.enable-archive-browsing` | `true` | Master switch for all archive browsing. When `false`, all archive endpoints return 403 regardless of per-format flags. |
-| `files.enable-zip-browsing` | `false` | Enable zip virtual folder browsing |
-| `files.enable-cbz-browsing` | `true` | Enable CBZ comic reader |
-| `files.enable-unitypkg-browsing` | `true` | Enable Unity package browsing |
-
-Each format requires both the master switch **and** its own flag to be enabled.
-Zip browsing defaults to off because processing arbitrary zip archives is heavier
-than the purpose-built CBZ and Unity package parsers.
-
 ## Zip files
 
 Zip archives open as virtual folders in the file browser. Click a `.zip` file to
-navigate into it as if it were a directory - the same file browser UI shows the
+navigate into it as if it were a directory — the same file browser UI shows the
 archive's contents, complete with folders you can click into.
 
 ### How it works
@@ -137,6 +120,11 @@ then serves file listings at each depth. Individual files inside the zip can be
 previewed or downloaded: images, PSD files, 3D models, and all other supported
 formats work exactly as they would outside the archive.
 
+### Configuration
+
+Zip browsing is enabled by default. Operators can disable it by setting
+`files.enableZipBrowsing: false` in the config.
+
 ### Limits
 
 | Limit | Value |
@@ -144,48 +132,6 @@ formats work exactly as they would outside the archive.
 | Maximum zip size | 500 MB |
 
 Zip files larger than 500 MB are available for download but cannot be browsed.
-
-## Comic books (CBZ)
-
-`.cbz` files open in a dedicated comic book reader. The reader displays pages in
-reading order with keyboard navigation, and shows metadata from the embedded
-`ComicInfo.xml` file when one is present.
-
-### Reading controls
-
-| Key | Action |
-|-----|--------|
-| Arrow Right / Space | Next page |
-| Arrow Left | Previous page |
-| Home | First page |
-| End | Last page |
-
-For manga (right-to-left reading direction), the arrow keys are reversed.
-
-### ComicInfo.xml metadata
-
-The info button in the reader's bottom bar opens a metadata panel showing fields
-from the [ComicInfo.xml schema](https://anansi-project.github.io/docs/comicinfo/documentation)
-(v2.0 and v2.1 draft): title, series, creators, publisher, date, genre, tags,
-age rating, language, and more. CBZ files without a `ComicInfo.xml` still work -
-the info button is simply hidden.
-
-### API endpoints
-
-| Endpoint | Description |
-|----------|-------------|
-| `GET /files/cbz/{id}/list?path=` | Browse archive contents |
-| `GET /files/cbz/{id}/file?path=` | Extract a single file |
-| `GET /files/cbz/{id}/metadata` | Parsed ComicInfo.xml + page count |
-| `GET /files/cbz/{id}/cover` | First image as a cover thumbnail |
-
-### Limits
-
-| Limit | Value |
-|-------|-------|
-| Maximum CBZ size | 500 MB |
-
-CBZ files larger than 500 MB are available for download but cannot be browsed.
 
 ## Unity packages
 
