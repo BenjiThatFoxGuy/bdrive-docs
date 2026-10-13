@@ -94,14 +94,23 @@ This is on by default. Only set these if you want to change that:
 
 ```toml
 [files]
+enable-archive-browsing = true
+enable-zip-browsing = false
+enable-cbz-browsing = true
+enable-unitypkg-browsing = true
 enable-zip-download = true
 zip-max-files = 10000
 zip-max-size = 0
 zip-max-concurrent = 4
 ```
 
-- `enable-zip-download` — turn the feature off entirely. The **Download as Zip** action disappears
-  from the UI, and both zip endpoints return `403`.
+- `enable-archive-browsing` — master switch for all archive browsing (zip, CBZ, Unity packages).
+  Turning this off disables all archive browsing regardless of the per-format flags below.
+- `enable-zip-browsing` — enable zip virtual folder browsing. Off by default.
+- `enable-cbz-browsing` — enable the CBZ comic reader with ComicInfo.xml metadata.
+- `enable-unitypkg-browsing` — enable Unity package virtual folder browsing.
+- `enable-zip-download` — turn the zip download feature off entirely. The **Download as Zip** action
+  disappears from the UI, and both zip endpoints return `403`.
 - `zip-max-files` — reject a request that would bundle more than this many files. Set `0` for no
   limit.
 - `zip-max-size` — reject a request whose total uncompressed size exceeds this many bytes. Set `0`
