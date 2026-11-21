@@ -13,7 +13,7 @@ same folder.
 | Photoshop | `psd` | Layer toggling — see below |
 | PDF | `pdf` | |
 | Office | `doc`, `docx`, `ppt`, `pptx`, `xls`, `xlsx` | Rendered by an external viewer |
-| Video | `mp4`, `mkv`, `mov`, `webm`, `avi`, `flv`, `wmv`, `m3u8` | Streamed with range requests |
+| Video | `mp4`, `mkv`, `mov`, `webm`, `avi`, `flv`, `wmv`, `m3u8` | Streamed with range requests; thumbnail generated on first view |
 | Audio | `mp3`, `m4a`, `aac`, `wav`, `ogg`, `oga`, `opus`, `flac` | |
 | Code & text | `c`, `cpp`, `cs`, `css`, `diff`, `html`, `java`, `js`, `jsx`, `json`, `log`, `py`, `rs`, `sh`, `srt`, `toml`, `ts`, `tsx`, `txt`, `vtt`, `vue`, `yaml`, `yml` | Syntax highlighted |
 | E-books | `epub` | |
@@ -212,3 +212,45 @@ a reconstructed directory listing.
 | Maximum package size | 500 MB |
 
 Packages larger than 500 MB are available for download but cannot be browsed.
+
+## Video thumbnails
+
+Video files display a thumbnail in the file browser. The first time a video's
+thumbnail is requested, the server downloads the file, extracts a single frame
+with ffmpeg, and uploads the resulting JPEG back to the same Telegram channel as
+the original media. Subsequent requests serve the cached thumbnail directly.
+
+Thumbnails are served through imgproxy at `/api/files/thumb/{id}`, so the same
+resizer host and width settings that apply to image thumbnails also apply here.
+
+### Requirements
+
+- **ffmpeg** must be available in the container or on `PATH`. The official Docker
+  image (`ghcr.io/benjithatfoxguy/bdrive`) includes ffmpeg.
+- An **imgproxy** instance must be configured (`resizerHost` setting).
+
+### Encryption
+
+When the original video is stored encrypted, the generated thumbnail is also
+encrypted before being uploaded to Telegram. The server decrypts the thumbnail
+transparently when serving it to imgproxy.
+
+### Limits
+
+| Limit | Value |
+|-------|-------|
+| Maximum video size for thumbnails | 500 MB |
+| Concurrent ffmpeg processes | 2 |
+| ffmpeg timeout | 30 seconds |
+
+Videos larger than 500 MB are streamed normally but do not get a thumbnail.
+Thumbnail generation runs at most two ffmpeg processes at a time to avoid
+overloading the server.
+
+### Cache invalidation
+
+Cached thumbnails are automatically deleted when a file's content is replaced
+(e.g. re-uploading to the same file entry). They are also cleaned up by the
+periodic file-deletion cron job: when a file is permanently deleted, its
+thumbnail message is removed from the Telegram channel alongside the file's
+own part messages.
