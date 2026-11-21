@@ -23,6 +23,32 @@ For Rclone use these options:
 > - Keep `multi-threads` value at 8 or lower to prevent excessive CPU usage.
 > - You can tweak these params to find the best performance for your connection.Don't set `vfs-read-chunk-size` too high, as it may cause buffering issues.
 
+## Stream errors and startup recovery
+
+BDrive bounds authentication database probes and stream setup so repeated mount
+requests do not launch unlimited dependency work during startup or an outage.
+Temporary dependency failures return `503 Service Unavailable` with
+`Retry-After: 30`; valid credentials are not treated as invalid simply because
+the session database is temporarily unavailable. Failed probes use a bounded
+2-to-30-second cooldown and recover on subsequent requests after dependencies
+become available. There is no automatic retry loop inside each stream request.
+
+Malformed file entries or missing media parts return `422 Unprocessable Entity`.
+Rejected Telegram credentials return `403 Forbidden`; those require signing in
+again or replacing the expired bot token rather than retrying indefinitely.
+Genuinely invalid BDrive credentials still return `401 Unauthorized`.
+
+Stream setup and the first read must succeed before BDrive sends a successful
+media response. If a later read fails, the connection is aborted rather than
+appending an error message to the media. Request-owned callback and chunk-worker
+panics are contained so a bad file request does not restart the server.
+
+These protections apply once the HTTP listener is running. Initial database
+connection and migration failures still prevent startup. If startup reports a
+Goose parser error for `20261121120000_add_thumbnails.sql`, update to a nightly
+containing the migration-marker fix; do not reset the database or manually mark
+the failed migration as applied.
+
 ## File Encryption
 
 Enable file encryption to secure your data:
