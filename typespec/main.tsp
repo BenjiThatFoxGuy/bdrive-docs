@@ -600,6 +600,15 @@ interface Files {
     @body body: FileUpdate,
   ): File | Error;
 
+  @route("/{id}/transform")
+  @post
+  @summary("Encrypt or decrypt a file")
+  @doc("Streams the plaintext, optionally re-encrypts, and re-uploads every part. Old parts are marked for deferred cleanup. Transformation breaks any dedup reference.")
+  transform(
+    @path id: string,
+    @query mode: "encrypt" | "decrypt",
+  ): NoContentResponse | Error;
+
   @route("/{id}/share")
   @delete
   @summary("Delete share")

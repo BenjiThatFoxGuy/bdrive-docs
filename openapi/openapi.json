@@ -1351,6 +1351,62 @@
         ]
       }
     },
+    "/files/{id}/transform": {
+      "post": {
+        "operationId": "Files_transform",
+        "summary": "Encrypt or decrypt a file",
+        "description": "Streams the plaintext, optionally re-encrypts, and re-uploads every part. Old parts are marked for deferred cleanup. Transformation breaks any dedup reference.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "encrypt",
+                "decrypt"
+              ]
+            },
+            "explode": false
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "There is no content to send for this request, but the headers may be useful."
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Files"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/files/{id}/{name}": {
       "get": {
         "operationId": "Files_stream",
