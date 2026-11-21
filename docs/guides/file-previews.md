@@ -13,12 +13,13 @@ same folder.
 | Photoshop | `psd` | Layer toggling — see below |
 | PDF | `pdf` | |
 | Office | `doc`, `docx`, `ppt`, `pptx`, `xls`, `xlsx` | Rendered by an external viewer |
-| Video | `mp4`, `mkv`, `mov`, `webm`, `avi`, `flv`, `wmv`, `m3u8` | Streamed with range requests |
+| Video | `mp4`, `mkv`, `mov`, `webm`, `avi`, `flv`, `wmv`, `m3u8` | Streamed with range requests; thumbnail generated on first view |
 | Audio | `mp3`, `m4a`, `aac`, `wav`, `ogg`, `oga`, `opus`, `flac` | |
 | Code & text | `c`, `cpp`, `cs`, `css`, `diff`, `html`, `java`, `js`, `jsx`, `json`, `log`, `py`, `rs`, `sh`, `srt`, `toml`, `ts`, `tsx`, `txt`, `vtt`, `vue`, `yaml`, `yml` | Syntax highlighted |
 | E-books | `epub` | |
 | Apple Wallet | `pkpass` | Rendered the way Wallet does |
 | 3D Models | `fbx`, `gltf`, `glb`, `obj`, `stl`, `ply`, `dae` | Interactive three.js viewer — see below |
+| Comics | `cbz` | Comic reader with ComicInfo.xml metadata |
 | Unity packages | `unitypackage` | Virtual folder browsing with asset extraction |
 
 ## Photoshop files
@@ -107,10 +108,26 @@ bounding-box dimensions.
 The model is auto-framed on load so it fits comfortably in the viewport, and a
 grid floor is scaled to the model's size for spatial reference.
 
+## Archive browsing configuration
+
+Archive browsing (zip, CBZ, and Unity packages) is controlled by a master switch
+and per-format flags:
+
+| Config key | Default | Description |
+|-----------|---------|-------------|
+| `files.enable-archive-browsing` | `true` | Master switch for all archive browsing. When `false`, all archive endpoints return 403 regardless of per-format flags. |
+| `files.enable-zip-browsing` | `false` | Enable zip virtual folder browsing |
+| `files.enable-cbz-browsing` | `true` | Enable CBZ comic reader |
+| `files.enable-unitypkg-browsing` | `true` | Enable Unity package browsing |
+
+Each format requires both the master switch **and** its own flag to be enabled.
+Zip browsing defaults to off because processing arbitrary zip archives is heavier
+than the purpose-built CBZ and Unity package parsers.
+
 ## Zip files
 
 Zip archives open as virtual folders in the file browser. Click a `.zip` file to
-navigate into it as if it were a directory — the same file browser UI shows the
+navigate into it as if it were a directory - the same file browser UI shows the
 archive's contents, complete with folders you can click into.
 
 ### How it works
@@ -120,11 +137,6 @@ then serves file listings at each depth. Individual files inside the zip can be
 previewed or downloaded: images, PSD files, 3D models, and all other supported
 formats work exactly as they would outside the archive.
 
-### Configuration
-
-Zip browsing is enabled by default. Operators can disable it by setting
-`files.enableZipBrowsing: false` in the config.
-
 ### Limits
 
 | Limit | Value |
@@ -132,6 +144,48 @@ Zip browsing is enabled by default. Operators can disable it by setting
 | Maximum zip size | 500 MB |
 
 Zip files larger than 500 MB are available for download but cannot be browsed.
+
+## Comic books (CBZ)
+
+`.cbz` files open in a dedicated comic book reader. The reader displays pages in
+reading order with keyboard navigation, and shows metadata from the embedded
+`ComicInfo.xml` file when one is present.
+
+### Reading controls
+
+| Key | Action |
+|-----|--------|
+| Arrow Right / Space | Next page |
+| Arrow Left | Previous page |
+| Home | First page |
+| End | Last page |
+
+For manga (right-to-left reading direction), the arrow keys are reversed.
+
+### ComicInfo.xml metadata
+
+The info button in the reader's bottom bar opens a metadata panel showing fields
+from the [ComicInfo.xml schema](https://anansi-project.github.io/docs/comicinfo/documentation)
+(v2.0 and v2.1 draft): title, series, creators, publisher, date, genre, tags,
+age rating, language, and more. CBZ files without a `ComicInfo.xml` still work -
+the info button is simply hidden.
+
+### API endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /files/cbz/{id}/list?path=` | Browse archive contents |
+| `GET /files/cbz/{id}/file?path=` | Extract a single file |
+| `GET /files/cbz/{id}/metadata` | Parsed ComicInfo.xml + page count |
+| `GET /files/cbz/{id}/cover` | First image as a cover thumbnail |
+
+### Limits
+
+| Limit | Value |
+|-------|-------|
+| Maximum CBZ size | 500 MB |
+
+CBZ files larger than 500 MB are available for download but cannot be browsed.
 
 ## Unity packages
 
@@ -158,3 +212,45 @@ a reconstructed directory listing.
 | Maximum package size | 500 MB |
 
 Packages larger than 500 MB are available for download but cannot be browsed.
+
+## Video thumbnails
+
+Video files display a thumbnail in the file browser. The first time a video's
+thumbnail is requested, the server downloads the file, extracts a single frame
+with ffmpeg, and uploads the resulting JPEG back to the same Telegram channel as
+the original media. Subsequent requests serve the cached thumbnail directly.
+
+Thumbnails are served through imgproxy at `/api/files/thumb/{id}`, so the same
+resizer host and width settings that apply to image thumbnails also apply here.
+
+### Requirements
+
+- **ffmpeg** must be available in the container or on `PATH`. The official Docker
+  image (`ghcr.io/benjithatfoxguy/bdrive`) includes ffmpeg.
+- An **imgproxy** instance must be configured (`resizerHost` setting).
+
+### Encryption
+
+When the original video is stored encrypted, the generated thumbnail is also
+encrypted before being uploaded to Telegram. The server decrypts the thumbnail
+transparently when serving it to imgproxy.
+
+### Limits
+
+| Limit | Value |
+|-------|-------|
+| Maximum video size for thumbnails | 500 MB |
+| Concurrent ffmpeg processes | 2 |
+| ffmpeg timeout | 30 seconds |
+
+Videos larger than 500 MB are streamed normally but do not get a thumbnail.
+Thumbnail generation runs at most two ffmpeg processes at a time to avoid
+overloading the server.
+
+### Cache invalidation
+
+Cached thumbnails are automatically deleted when a file's content is replaced
+(e.g. re-uploading to the same file entry). They are also cleaned up by the
+periodic file-deletion cron job: when a file is permanently deleted, its
+thumbnail message is removed from the Telegram channel alongside the file's
+own part messages.

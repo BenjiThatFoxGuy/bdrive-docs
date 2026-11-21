@@ -16,3 +16,15 @@ Request/response body:
   "resizerQuality": 80
 }
 ```
+
+### Video thumbnail endpoint
+
+Video files have a dedicated thumbnail source endpoint:
+
+- `GET /api/files/thumb/{fileId}?hash=` — returns a JPEG thumbnail for a video file
+
+On the first request, the server generates the thumbnail using ffmpeg and caches
+it as a Telegram message in the same channel as the original file. Subsequent
+requests serve the cached image. imgproxy fetches this endpoint and resizes the
+result for the UI, using the same `resizerHost` / `resizerWidth` / `resizerQuality`
+settings as image thumbnails.
