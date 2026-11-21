@@ -1131,6 +1131,14 @@ model ServerConfig {
   @doc("Public-facing base URL of the standalone alt-domain shortlink listener (e.g. https://go.example.com), if the operator has configured one. Absent when unset, even if shortlinksEnabled is true - the listener can run on a bare address with no public domain assigned yet.")
   @example("https://go.example.com")
   shortlinkDomain?: string;
+
+  @doc("Base URL of the imgproxy/image resizer instance for thumbnails (e.g. https://imgproxy.example.com). Configured server-side so all clients use the same resizer.")
+  @example("https://imgproxy.example.com")
+  resizerHost?: string;
+
+  @doc("Whether the server has an encryption key configured. Clients hide encrypt/decrypt actions when false.")
+  @example(true)
+  encryptionEnabled: boolean;
 }
 
 @route("/config")
