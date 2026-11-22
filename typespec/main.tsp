@@ -1189,6 +1189,14 @@ model ServerConfig {
   @doc("Whether the server has an encryption key configured. Clients hide encrypt/decrypt actions when false.")
   @example(true)
   encryptionEnabled: boolean;
+
+  @doc("Whether the operator enabled server-side PSD preview for every file (opt-in). When false, clients keep the browser fast path unless the browser lacks a blend mode.")
+  @example(false)
+  psdServerPreview: boolean;
+
+  @doc("Whether this server can render PSD layer previews at all. Clients only route PSD previews to the server when true.")
+  @example(true)
+  psdServerCapable: boolean;
 }
 
 @route("/config")
