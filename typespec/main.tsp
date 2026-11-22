@@ -570,10 +570,51 @@ model CategoryStats {
   category: Category;
 }
 
+model PsdPreviewLayer {
+  id: int32;
+  name: string;
+  visible: boolean;
+  group: boolean;
+  children?: PsdPreviewLayer[];
+}
+
+model PsdPreviewMetadata {
+  width: int32;
+  height: int32;
+  layers: PsdPreviewLayer[];
+}
+
+model PsdLayerVisibility {
+  id: int32;
+  visible: boolean;
+}
+
+model PsdPreviewRequest {
+  @maxItems(1024)
+  visibility: PsdLayerVisibility[];
+}
+
+model PsdPreviewPng {
+  @statusCode statusCode: 200;
+  @header("Content-Type") contentType: "image/png";
+  @body content: bytes;
+}
+
 @route("/files")
 @tag("Files")
 @useAuth(ApiAuth)
 interface Files {
+  @route("/{id}/psd-preview")
+  @get
+  @summary("Inspect layers for a server-side PSD preview")
+  psdPreviewMetadata(@path id: string): PsdPreviewMetadata | Error;
+
+  @route("/{id}/psd-preview")
+  @post
+  @summary("Render a lossless PSD preview with layer visibility overrides")
+  @doc("Returns a display-sized PNG without modifying the source PSD. Layers not specified retain their saved visibility.")
+  psdPreviewRender(@path id: string, @body options: PsdPreviewRequest): PsdPreviewPng | Error;
+
   @route("")
   @get
   @summary("List all files")
